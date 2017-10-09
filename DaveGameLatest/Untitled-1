@@ -1,0 +1,75 @@
+   /*function m_xDirCollision()
+{
+    if((this.image == 2) || (this.image == 1))
+    {
+        if(right)   
+        {    
+            if((daveBoy.xCord + daveBoy.size> this.xPos ) && (daveBoy.xCord + daveBoy.speed < this.xPos + size ) && 
+               (daveBoy.yCord + daveBoy.size > this.yPos + 1 ) && (daveBoy.yCord < this.yPos + size - daveBoy.speed))
+            {
+                daveBoy.speed = 0;
+                collision = true;
+                isGrounded = true;
+               
+            }
+            else if(!collision)
+            {
+                daveBoy.speed = 3;
+              
+            }
+        }
+        if(left)
+        {
+            if((daveBoy.xCord - daveBoy.speed + daveBoy.size > this.xPos ) && (daveBoy.xCord < this.xPos  + size) && 
+               (daveBoy.yCord + daveBoy.size> this.yPos + 1 ) && (daveBoy.yCord < this.yPos + size))
+            {
+                daveBoy.speed = 0;
+                collision = true;
+                isGrounded = true;
+            }
+            else if(!collision)
+            {
+                daveBoy.speed = 4;
+              
+            }
+        }
+    }
+function m_yDirCollision()
+{
+    if((this.image == 2) || (this.image == 1))
+    {
+        if((daveBoy.xCord - daveBoy.speed > this.xPos - daveBoy.size) && (daveBoy.xCord < this.xPos + size - daveBoy.speed) && (daveBoy.yCord + gravity > this.yPos - daveBoy.size + 1) && (daveBoy.yCord + gravity < this.yPos + size - daveBoy.speed) && (gravity > 0))
+        {
+            daveBoy.yCord = this.yPos + 1 - daveBoy.size;
+            gravity = 0;
+            jump = false;
+            isGrounded = true;
+        }
+        if((daveBoy.xCord - daveBoy.speed > this.xPos + daveBoy.speed - daveBoy.size) && (daveBoy.xCord < this.xPos + size - daveBoy.speed) && (daveBoy.yCord + gravity > this.yPos - daveBoy.size) && (daveBoy.yCord + gravity < this.yPos + size -1 - daveBoy.speed0) && (gravity < 0))
+        {
+            daveBoy.yCord = this.yPos + size - 1;
+            gravity = 0;
+            isGrounded = true;
+        }
+    }
+}*/
+
+    /*function collisionCheck()
+{
+    collision = false;
+    for(var i = 0 ; i < gridArray.length; i++)
+    {
+        gridArray[i].xDirCollision();
+        if(collision)
+            break;
+    }
+    for(var i = 0 ; i < gridArray.length; i++)
+    {
+        gridArray[i].yDirCollision();
+    }   
+}*/
+
+    /*function checkGrounded()
+    {
+        if()
+    }*/

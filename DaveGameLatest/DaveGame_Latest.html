@@ -1,0 +1,1420 @@
+<canvas id="canvas" width="1200" height="400" style="border:1px solid #000000"></canvas>
+
+<script>
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var elementCount = 0;
+var gridCount = 0;
+var size = 24;
+var daveSize = 24;
+var gridArray = new Array(700);
+var scrollingDist = 10;
+var x = 0; 
+var y = 0;
+var fireCounter =0;
+var waterCounter = 0;
+var weedCounter = 0;
+var cupCounter = 0;
+var shiftDown = 10;
+var scorex = 0;
+var scorey = 0;
+var trophyX = 78;
+var trophyY = 312;
+var turnright = true;
+var turnleft = false;
+var up = false;
+var right = false;
+var left = false;
+var verticalSpeed = 0;
+var gravity = 1;
+var speed = 4;
+var monsCount = 0;
+var turnRight = true;
+var turnLeft = false;
+var jump = false;
+var isGrounded = false;
+var collision = false;
+var showGun = true;
+var shootDaveBullet = false;
+var reachedDoor = false;
+var trophyCollected = false;
+var monsBulletActive = true;
+
+
+ var moveCounter =0;
+var daveExploCounter = 0;
+var davejumpTimer = 0;
+var daveLivesCounter =0;
+    
+var fireCounterGap = 150;
+var state ;
+
+    
+
+var matrix = 
+[
+ 0,0,0,7,0,0,0,16,16,16,16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,0,0,0,0,0,0,0,0,17,17,17,0,0,0,0,0,0,0,0,0, 
+8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,  
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,3,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,1,1,
+1,0,0,0,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,2,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1, 11,11,11,0,0,11,11,0,11,11,11,0,
+1,0,0,0,0,0,0,0,2,2,2,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,1,1,1,1,1,1,1,1,1,0,0,1, 11,0,11,0,11,0,0,0,11,0,11,0,
+1,0,2,2,0,0,0,0,0,1,0,0,0,15,1,0,2,2,2,2,2,0,1,0,0,1,1,0,5,1,0,0,0,0,1,0,0,1,11,11,11,0,11,0,0,0,11,11,0,0,
+1,0,0,0,0,0,0,0,0,1,0,2,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,1,0,1,0,1,1, 11,0,0,0,11,0,0,0,11,0,11,0,
+1,0,0,0,2,2,2,0,3,1,0,0,0,0,1,0,4,4,4,4,4,0,1,0,1,0,1,1,0,1,0,1,1,0,0,0,0,1, 11,0,0,0,0,11,11,0,11,0,11,0,
+1,0,0,0,0,0,0,0,0,1,4,0,0,2,1,0,0,0,0,0,0,0,1,0,0,0,1,5,0,0,0,0,1,0,0,1,5,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,
+9,9,9,9,9,9,1,9,9,9,9,1,10,10,10,10,10,10,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,9,9,9,9,9,9,9,
+12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+var redtile = new Image();
+redtile.src = "redTile.png";
+var platformTile = new Image();
+platformTile.src = "platformTile.png"; 
+var redDiamond = new Image();
+redDiamond.src = "redDiamonds.png";
+var blueDiamond = new Image();
+blueDiamond.src = "diamonds.png";
+var sphere = new Image();
+sphere.src = "sphere.png";
+var door = new Image();
+door.src = "door.png";
+var score = new Image();
+score.src = "score.png";
+var zero = new Image();
+zero.src = "0.png"; 
+var one = new Image();
+one.src = "1.png"; 
+var two = new Image();
+two.src = "2.png";
+var three = new Image();
+three.src = "3.png";
+var four = new Image();
+four.src = "4.png";
+var five = new Image();
+five.src = "5.png";
+var six = new Image();
+six.src = "6.png";
+var seven = new Image();
+seven.src = "7.png";
+var eight = new Image();
+eight.src = "8.png";
+var nine = new Image();
+nine.src = "9.png";
+var door = new Image();
+door.src = "door.png";
+var fire1 = new Image();
+fire1.src = "fire1.png";
+var fire2 = new Image();
+fire2.src = "fire2.png";
+var fire3 = new Image();
+fire3.src = "fire3.png";
+var fire4 = new Image();
+fire4.src = "fire4.png";
+var water1 = new Image();
+water1.src = "water1.png";
+var water2 = new Image();
+water2.src = "water2.png";
+var water3 = new Image();
+water3.src = "water3.png";
+var water4 = new Image();
+water4.src = "water4.png";
+var weed1 = new Image();
+weed1.src = "weed1.png";
+var weed2 = new Image();
+weed2.src = "weed2.png";
+var weed3 = new Image();
+weed3.src = "weed3.png";
+var weed4 = new Image();
+weed4.src = "weed4.png";
+var gun = new Image();
+gun.src = "gun.png";
+var guntext = new Image();
+guntext.src = "gunText.png";
+var cup1 = new Image();
+cup1.src = "cup1.png";
+var cup2 = new Image();
+cup2.src = "cup2.png";
+var cup3 = new Image();
+cup3.src = "cup3.png";
+var cup4 = new Image();
+cup4.src = "cup4.png";
+var cup5 = new Image();
+cup5.src = "cup5.png";
+var dave1 = new Image();
+dave1.src = "dave1.png";
+    //turnRight
+var dave2 = new Image();
+dave2.src = "dave2.png";
+    //walkingRight
+var dave3 = new Image();
+dave3.src = "dave3.png";
+    //jumingRight
+var dave4 = new Image();
+dave4.src = "dave4.png";
+    //Leftface
+var dave5 = new Image();
+dave5.src = "dave5.png";
+        //walkingLeft
+var dave6 = new Image();
+dave6.src = "dave6.png";
+        //jumpingLeft
+var dave7 = new Image();
+dave7.src = "dave7.png";
+var monster = new Image();
+monster.src = "monster.png";
+var explosion1 = new Image();
+explosion1.src = "explosion1.png";
+var explosion2 = new Image();
+explosion2.src = "explosion2.png";
+var monsterBulletimg = new Image();
+monsterBulletimg.src = "monsterBullet.png";
+var daveBullet = new Image();
+daveBullet.src = "daveBullet.png";
+var scoreImg = new Image();
+scoreImg.src = "score.png";
+var levelAndDaves = new Image();
+levelAndDaves.src = "levelanddaves.png";
+var topBorder = new Image();
+topBorder.src = "topborder.png";
+var bottomBorder = new Image();
+bottomBorder.src = "bottomborder.png";
+var daveLives = new Image();
+daveLives.src = "lives.png";
+var gothru = new Image();
+gothru.src = "gothru.png";
+    
+var bgImage = new Image();
+bgImage.src = "bgImage.png";
+var arrow = new Image();
+arrow.src = "arrow_keys.png";
+var daveBoyImg = new Image();
+daveBoyImg.src = "daveBg.png";
+var daveMenu0 = new Image()
+daveMenu0.src = "davemenu0.png";
+var daveMenu1 = new Image()
+daveMenu1.src = "davemenu1.png";
+var daveMenu2 = new Image()
+daveMenu2.src = "davemenu2.png";
+var g_menucount = 0;
+var g_menuTimer = 0;
+    
+
+var startscene = true;
+var gamescene = false;
+    
+
+function c_grid(xPos,yPos,offsetX,offsetY,image)
+{
+    this.xPos = xPos;
+    this.yPos = yPos;
+    this.image = image;
+    this.type ;
+
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+    this.showDiamonds = true;
+
+    this.drawImage = m_drawImage;
+
+}
+
+
+function createGrid()
+{    
+    for(var i = 0; i < 14; i++)
+    {
+        for(var j = 0; j < 50; j++)
+        {
+            
+            gridArray[elementCount] = new c_grid((j * size), (i * size),(j * size) , (i * size), matrix[gridCount]);
+            elementCount++;
+            gridCount++;
+           
+              
+        }
+    }
+}
+
+    var blueDiamondArray = [gridArray[157],gridArray[466],gridArray[467],gridArray[468],gridArray[469],gridArray[470],gridArray[510]];
+function m_drawImage()
+{
+    this.xPos = x + this.offsetX;
+    this.yPos = y + this.offsetY;
+
+    if(this.image == 1)
+    {
+        this.type = "solid";
+        ctx.drawImage(redtile,this.xPos,this.yPos);
+    }
+    else if(this.image == 2)
+    {
+        this.type = "solid";
+        ctx.drawImage(platformTile,this.xPos,this.yPos);
+    }
+    else if(this.image == 3)
+    {
+        if(this.showDiamonds)
+            {
+                this.type = "prize";
+                ctx.drawImage(redDiamond,this.xPos,this.yPos);
+            }
+        
+    }
+    else if(this.image == 4)
+    {
+         if(this.showDiamonds)
+            {
+                this.type = "prize";
+                ctx.drawImage(blueDiamond,this.xPos,this.yPos);
+            }
+        
+    }
+    else if(this.image == 5)
+    {
+        if(this.showDiamonds)
+            {
+                this.type = "prize";
+                ctx.drawImage(sphere,this.xPos,this.yPos);
+            }
+        
+    }
+    else if(this.image == 6)
+    {
+        this.type = "consume";
+        ctx.drawImage(door,this.xPos,this.yPos);
+    }
+    /*else if(this.image == 7)
+    {
+      
+        ctx.drawImage(scoreImg,this.xPos,this.yPos);
+    }*/
+    else if(this.image == 8)
+    {
+      
+        ctx.drawImage(topBorder,this.xPos,this.yPos);
+    }
+    else if(this.image == 9)
+    {
+        this.type = "consume";
+       this.yPos = 277;
+        fireCounter++;
+        if(fireCounter >= 0 && fireCounter < fireCounterGap)
+             {
+                 ctx.drawImage(fire1,this.xPos,this.yPos + 5);
+             }
+         if(fireCounter >= fireCounterGap && fireCounter < fireCounterGap * 2 )
+             {
+                 ctx.drawImage(fire2,this.xPos,this.yPos);
+             }
+         if(fireCounter >=fireCounterGap * 2 && fireCounter < fireCounterGap * 3)
+             {
+                 ctx.drawImage(fire3,this.xPos,this.yPos);
+             }
+         if(fireCounter >=fireCounterGap * 3 && fireCounter < fireCounterGap * 4)
+             {
+                 ctx.drawImage(fire4,this.xPos,this.yPos);
+                  
+             }
+        if(fireCounter >= fireCounterGap * 4)
+            {
+                fireCounter = 0;
+                ctx.drawImage(fire1,this.xPos,this.yPos);
+            }
+
+
+    }
+    else if(this.image == 10)
+    {
+        this.type = "consume";
+       this.yPos = 277;
+         waterCounter++;
+        if(waterCounter >= 0 && waterCounter < 80)
+             {
+                 ctx.drawImage(water1,this.xPos,this.yPos);
+             }
+         if(waterCounter >= 80 && waterCounter < 100)
+             {
+                 ctx.drawImage(water2,this.xPos,this.yPos);
+             }
+         if(waterCounter >= 100 && waterCounter < 150)
+             {
+                 ctx.drawImage(water3,this.xPos,this.yPos);
+             }
+         if(waterCounter >= 150 && waterCounter < 190)
+             {
+                 ctx.drawImage(water4,this.xPos,this.yPos);
+                  waterCounter = 0;
+             }
+    }
+   
+    else if(this.image == 11)
+    {
+         weedCounter++;
+        if(weedCounter >= 0 && weedCounter < 80)
+             {
+                 ctx.drawImage(weed1,this.xPos,this.yPos);
+             }
+         if(weedCounter >= 80 && weedCounter < 100)
+             {
+                 ctx.drawImage(weed2,this.xPos,this.yPos);
+             }
+         if(weedCounter >= 100 && weedCounter < 150)
+             {
+                 ctx.drawImage(weed3,this.xPos,this.yPos);
+             }
+         if(weedCounter >= 150 && weedCounter < 190)
+             {
+                 ctx.drawImage(weed4,this.xPos,this.yPos);
+                  weedCounter = 0;
+             }
+    }
+     else if(this.image == 12)
+    {
+      
+        ctx.drawImage(bottomBorder,this.xPos,this.yPos);
+    }
+    else if(this.image == 13)
+    {
+      
+        ctx.drawImage(levelAndDaves,this.xPos,this.yPos);
+    }
+
+    else if(this.image == 14)
+    {
+        this.type = "prize";
+        if(showGun)
+            {
+                 ctx.drawImage(gun,this.xPos,this.yPos);
+            }
+       
+       
+    }
+    else if(this.image == 15)
+    {
+        this.type = "prize";
+        if(this.showDiamonds)
+            {
+                 cupCounter++;
+                if(cupCounter == 0)
+                     {
+                         ctx.drawImage(cup1,this.xPos,this.yPos);
+                     }
+                 if(cupCounter == 2)
+                     {
+                         ctx.drawImage(cup2,this.xPos,this.yPos);
+                     }
+                 if(cupCounter == 3)
+                     {
+                         ctx.drawImage(cup3,this.xPos,this.yPos);
+                     }
+                 if(cupCounter == 4)
+                     {
+                         ctx.drawImage(cup4,this.xPos,this.yPos);
+
+                     }
+                 if(cupCounter == 5)
+                     {
+                         ctx.drawImage(cup4,this.xPos,this.yPos);
+                          cupCounter = 0;
+                     }
+            }
+        
+
+    }
+    /*else if(this.image == 16)
+    {
+      
+        ctx.drawImage(zero,this.xPos,this.yPos);
+    }*/
+    
+    else if(this.image == 17)
+    {
+      
+        ctx.drawImage(daveLives,this.xPos,this.yPos);
+    }
+
+}
+/*function keyDownManager(e)
+{
+    if(e.keyCode == 39)
+        {
+            for(var i = 0 ; i < gridArray.length; i ++)
+                {
+                    if(gridArray[gridArray.length-1].xPos + size > canvas.width)
+                        {
+                             gridArray[i].offsetX -= scrollingDist;
+                        }
+
+                }
+        }
+    if(e.keyCode == 37)
+        {
+            for(var i = 0 ; i < gridArray.length; i ++)
+                {
+                    if(gridArray[0].xPos < 0)
+                        {
+                             gridArray[i].offsetX += scrollingDist;
+                        }
+
+                }
+        }
+}*/
+
+    function keyDownManager(e)
+{
+    if(e.keyCode == 13)
+    {
+        //gamescene
+       gamescene = true;
+       startscene = false; 
+    }
+    if(e.keyCode == 39)
+    {    
+        right = true;
+        turnLeft = false;
+        turnRight = true;
+    }
+    if(e.keyCode == 37)
+    {    
+        left = true;
+        turnRight = false;
+        turnLeft = true;
+    }
+    if(e.keyCode == 38)
+    {    
+       
+        {
+           up = true;
+        }
+    }
+    if(e.keyCode == 32 )
+       {
+            daveBulletObj.updateBulletPosition();
+           if(daveBulletObj.bulletCollected )
+               {
+                   daveBulletObj.shoot = true;
+                   daveBulletObj.active = true; 
+               }
+            
+       }
+    
+    
+    
+}
+    
+function keyUpManager(e)
+{
+    if(e.keyCode == 39)  
+        right = false;
+    if(e.keyCode == 37)
+        left = false;
+    if(e.keyCode == 38)
+        up = false;
+     /*if(e.keyCode == 13 )
+        daveBulletObj.shoot = false;*/
+       
+}
+function c_daveBoy(xCord, yCord, size, image, speed)
+{
+    this.xCord = xCord;
+    this.yCord = yCord;
+    this.size = daveSize;
+    this.daveImage = image;
+    this.speed = speed;
+    this.alive = true;
+    this.lives =3;
+    this.score = 0;
+
+    this.drawDave = m_drawDave;
+    this.moveDave = m_moveDave;
+
+}
+var daveBoy = new c_daveBoy(26,285,24,dave1,4);
+
+    function m_drawDave()
+{   //if(this.alive)
+    {
+        ctx.drawImage(this.daveImage,this.xCord,this.yCord);
+    }
+    
+}
+function m_moveDave()
+{
+    if(this.alive)
+    {
+    if(right )
+    {
+        moveCounter++;
+        this.speed = 4;
+        for(var i = 0 ; i < gridArray.length ; i ++)
+        {
+        if(gridArray[i].image == 1 || gridArray[i].image == 2 )
+            {
+                if(rightsideCollisionDetection(this , gridArray[i]))
+                    {
+                        //this.speed = 0;
+                        this.speed = gridArray[i].xPos - (this.xCord + this.size) ;
+                        console.log(this.speed);
+                        console.log(gridArray[i].xPos);
+                        console.log(i);
+                        break;
+                    }
+              
+            }
+      
+        }
+         console.log(this.speed);
+       this.xCord += this.speed;
+        
+
+        if(!jump)
+        { 
+            
+            if(moveCounter == 2)
+            {
+                this.daveImage = dave3;
+            }
+            else if(moveCounter == 5 && turnRight )
+            {
+                this.daveImage = dave2;
+            }
+            else if(moveCounter == 8)
+            {
+                this.daveImage = dave3;
+                moveCounter = 0;
+            }
+            
+        }
+    }
+     if(left )
+    {
+        moveCounter++;
+         this.speed = 4;
+        for(var i = 0 ; i < gridArray.length ; i ++)
+        {
+        if(gridArray[i].image == 1 || gridArray[i].image == 2 )
+            {
+                if(leftsideCollisionDetection(this , gridArray[i]))
+                    {
+                        //this.speed = 0;
+                        this.speed = this.xCord - (gridArray[i].xPos + size);
+                        break;
+                    }
+                
+            }
+       
+        }
+        
+        this.xCord -= this.speed;
+        
+
+        if(!jump) 
+        {    
+            if(moveCounter == 2 && turnLeft)
+            {
+                this.daveImage = dave5;
+            }
+            else if(moveCounter == 7)
+            {
+                this.daveImage = dave6;
+            }
+            else if(moveCounter == 8 && turnLeft)
+            {
+                this.daveImage = dave5;
+                moveCounter = 5;
+            }
+            
+        }
+    }
+    
+   
+    verticalSpeed -= gravity;
+    
+    if((up) && (!jump))
+    {
+        
+        verticalSpeed = 15;
+        gravity = 1;
+        jump = true; 
+        verticalSpeed -= gravity;
+        
+        if(right)
+            {
+                davejumpTimer++;
+                this.daveImage = dave4;
+                if(davejumpTimer == 2)
+                    {
+                        this.daveImage = dave2;
+                        davejumpTimer = 0
+                    }
+                
+            }
+        if(left)
+            {
+                davejumpTimer++;
+                this.daveImage = dave7;
+                if(davejumpTimer == 2)
+                    {
+                        this.daveImage = dave5;
+                        davejumpTimer = 0
+                        
+                    }
+                
+            }
+        
+        
+    }
+    
+for(var i = 0 ; i < gridArray.length ; i ++)
+    {
+        if(gridArray[i].image == 1 || gridArray[i].image == 2 )
+            {
+                if(collisionDetection(this ,gridArray[i] ))
+                         {
+                             if(verticalSpeed > 0)
+                                 {
+                                     this.yCord = gridArray[i].yPos + size ;
+                                 }
+                             else if(verticalSpeed < 0)
+                                 {
+                                     
+                                     this.yCord = gridArray[i].yPos - this.size ;
+                                     jump = false;
+                                     
+                                 }
+                            verticalSpeed = 0;
+                             
+                             
+                             
+                             
+                        }
+                    
+             
+            }
+    }
+    jump = false;
+    }
+}
+
+function resetDave()
+    {
+        
+        daveBoy.xCord = 26;
+        daveBoy.yCord = 285;
+        verticalSpeed = 0;
+        gravity = 1;
+        jump = false; 
+        turnRight = true;
+        turnLeft = false;
+        daveBoy.alive = true;
+        daveBoy.daveImage = dave1;  
+        daveBoy.drawDave();
+        daveBoy.moveDave();
+        monsterBulletObj.active = true;
+    }
+    
+   
+  function collisionDetection(obj1, obj2)
+    {
+       if(!(((obj1.xCord > obj2.xPos && obj1.xCord >= obj2.xPos + size)
+          && (obj1.xCord + obj1.size > obj2.xPos && obj1.xCord + obj1.size > obj2.xPos + size)) ||  ((obj1.xCord < obj2.xPos && obj1.xCord < obj2.xPos + size)
+          && (obj1.xCord + obj1.size <= obj2.xPos && obj1.xCord + obj1.size < obj2.xPos + size))))
+                    {
+                        if(!(((obj1.yCord - verticalSpeed > obj2.yPos && obj1.yCord - verticalSpeed >= obj2.yPos + size)
+                          && (obj1.yCord + obj1.size - verticalSpeed > obj2.yPos && obj1.yCord + obj1.size - verticalSpeed > obj2.yPos + size)) || 
+                           ((obj1.yCord - verticalSpeed < obj2.yPos && obj1.yCord - verticalSpeed < obj2.yPos + size)
+                          && (obj1.yCord + obj1.size - verticalSpeed <= obj2.yPos && obj1.yCord + obj1.size - verticalSpeed < obj2.yPos + size))))
+                            {
+                                
+                                return true;
+                            }
+                       
+                    }
+        
+    } 
+    
+    function leftsideCollisionDetection(obj1, obj2)
+    {
+        if(!(((obj1.xCord - obj1.speed > obj2.xPos && obj1.xCord - obj1.speed >= obj2.xPos + size)
+                && (obj1.xCord + obj1.size - obj1.speed > obj2.xPos && obj1.xCord + obj1.size - obj1.speed > obj2.xPos + size))
+            
+            ||
+           ((obj1.xCord - obj1.speed < obj2.xPos && obj1.xCord - obj1.speed < obj2.xPos + size)
+                && (obj1.xCord + obj1.size - obj1.speed < obj2.xPos && obj1.xCord + obj1.size - obj1.speed < obj2.xPos + size))
+          ))
+           
+            {
+                 if(!(((obj1.yCord > obj2.yPos && obj1.yCord >= obj2.yPos + size)
+                        && (obj1.yCord + obj1.size > obj2.yPos && obj1.yCord + obj1.size > obj2.yPos + size)) 
+                                                    ||  
+                      ((obj1.yCord < obj2.yPos && obj1.yCord < obj2.yPos + size)
+                        && (obj1.yCord + obj1.size <= obj2.yPos && obj1.yCord + obj1.size < obj2.yPos + size))))
+                     {
+                         //console.log("collided with tile from left");
+                         return true;
+                     }
+                else
+                {
+                    return false;
+                }
+            }
+    }
+    function rightsideCollisionDetection(obj1, obj2)
+    {
+        if(!(((obj1.xCord + obj1.speed < obj2.xPos && obj1.xCord + obj1.speed < obj2.xPos + size)
+            && (obj1.xCord + obj1.size + obj1.speed <= obj2.xPos && obj1.xCord + obj1.size + obj1.speed < obj2.xPos + size))
+           ||
+           ((obj1.xCord + obj1.speed > obj2.xPos && obj1.xCord + obj1.speed > obj2.xPos + size)
+                && (obj1.xCord + obj1.size + obj1.speed > obj2.xPos && obj1.xCord + obj1.size + obj1.speed > obj2.xPos + size))
+          ))
+           
+            {
+                 if(!(((obj1.yCord > obj2.yPos && obj1.yCord >= obj2.yPos + size)
+                        && (obj1.yCord + obj1.size > obj2.yPos && obj1.yCord + obj1.size > obj2.yPos + size)) 
+                                                    ||  
+                      ((obj1.yCord < obj2.yPos && obj1.yCord < obj2.yPos + size)
+                        && (obj1.yCord + obj1.size <= obj2.yPos && obj1.yCord + obj1.size < obj2.yPos + size))))
+                     {
+                         //console.log("collided with tile from right");
+                         return true;
+                     }
+                else
+                {
+                    return false;
+                }
+            }
+    }
+                                              
+        
+  function fireAndWaterConsume()
+    {
+        
+        for(var i = 0 ; i < 700; i++)
+        {
+            if(gridArray[i].image == 9)
+               {
+                    if(collisionDetection(daveBoy, gridArray[i]) )
+                        {
+                            
+                            daveExploCounter++;
+                            daveLivesCounter ++;
+                            verticalSpeed = 0;
+                            daveBoy.daveImage = explosion1;
+                            
+                        daveBoy.alive = false;
+                         //verticalSpeed =0;
+                         gravity = 0;
+                         //monsterBulletObj.active = false;
+                        //daveBoy.daveImage = explosion1;
+                         setTimeout( animateDaveExplo, 1000);
+                        //setTimeout(removeDave, 1000);
+                         setTimeout(resetDave, 1000);
+                         //daveBoy.lives --;
+                        //console.log(daveLivesCounter);
+                         if(daveLivesCounter == 1 )
+                             {
+                                 gridArray[40].image =0;
+                                 
+                                 //resetDave();
+                             }
+                         else if(daveLivesCounter == 2 )
+                             {
+                                 gridArray[39].image =0;
+                                 //break;
+                                 //resetDave();
+                             }
+                         else if(daveLivesCounter == 3)
+                             {
+                                 gridArray[38].image =0;
+                                 //gameOver();
+                                 //break;
+                                 
+                             }
+                            
+                            //setTimeout(removeDave, 500);
+                            /*if(daveLivesCounter == 3)
+                                {
+                                    setTimeout(resetDave, 200);
+                                }*/
+                            /*if(daveExploCounter >= 1 && daveExploCounter < 3)
+                                {
+                                    console.log(daveExploCounter);
+                                    daveBoy.daveImage = explosion1;
+                                }
+                            if(daveExploCounter == 3)
+                                {
+                                    daveBoy.alive = false;
+                                    
+                                    //if(daveExploCounter = 4)
+                                        {
+                                            resetDave();
+                                            daveExploCounter = 0;
+                                            
+                                        }
+                                    
+                                }*/
+                        }
+               }
+            if(gridArray[i].image == 10)
+               {
+                    if(collisionDetection(daveBoy, gridArray[i]) )
+                        {
+                            
+                            daveExploCounter++;
+                            verticalSpeed = 0;
+                        
+                            if(daveExploCounter == 2)
+                                {
+                                    daveBoy.alive = false;
+                                     //if(daveExploCounter = 4)
+                                        {
+                                            resetDave();
+                                            daveExploCounter = 0;
+                                            
+                                        }
+                                }
+                        }
+               }
+        }
+    }
+  
+                       
+    function c_monster(image)
+{
+    this.xPos;
+    this.yPos;
+    this.width = 40;
+    this.height = 22;
+    
+    this.image = image;
+    this.showMons = true;
+    this.xPosArray = new Array(11);
+    this.yPosArray = new Array(11);
+    
+    this.drawMonster = m_drawMonster;
+    this.moveMonster = m_moveMonster;
+}
+var monsterObj = new c_monster(monster);
+monsterObj.xPosArray = [418, 445, 422, 455, 444, 437, 432, 419, 418, 384, 400];
+monsterObj.yPosArray = [76, 81, 94, 111, 131, 130, 138, 143, 145, 111, 76];
+
+function m_drawMonster()
+{
+    if(this.showMons)
+        {
+            ctx.drawImage(this.image,this.xPos,this.yPos);
+        }
+        
+}
+    
+function m_moveMonster()
+{
+    monsCount++;
+    for(var i = 0; i < this.xPosArray.length; i++)
+    {
+        if(monsCount == i+1)
+        {
+            this.xPos = x + this.xPosArray[i];
+            this.yPos = y + this.yPosArray[i];
+            if(monsCount == 11)
+                monsCount = 0;
+        }
+    }
+}
+    function removeMonster()
+    {
+        monsterObj.showMons = false;
+    }
+    
+function c_bullet(speed,height,width,image)
+{
+    this.xCord = 0;
+    this.yCord = 0;
+    this.speed = speed;
+    this.active = false;
+    this.bulletCollected = false;
+    this.shoot = false;
+    this.size = 25;
+    this.height = height;
+    this.width = width;
+    
+    this.image = image;
+    this.updateBulletPosition = m_updateBulletPosition;
+    this.monsBulletPosition =  m_updateMonsBulletPosition;
+    this.drawBullet = m_drawBullet;
+    this.shootMonsBullet= m_shootMonsBullet;
+    this.shootDaveBullet = m_shootDaveBullet;
+}
+    
+var monsterBulletObj = new c_bullet(10,5,25,daveBullet);
+var daveBulletObj = new c_bullet(10,5,25,monsterBulletimg);
+    
+    
+ function m_updateBulletPosition()
+    {
+        this.xCord = daveBoy.xCord +10;
+        this.yCord = daveBoy.yCord +10;
+    }
+     function m_updateMonsBulletPosition()
+    {
+        this.xCord = monsterObj.xPos;
+        this.yCord = monsterObj.yPos;
+    }
+function m_drawBullet()    
+{
+    if(this.active)
+        {
+            ctx.drawImage(this.image,this.xCord,this.yCord);
+        }
+}
+    
+    
+    function m_shootDaveBullet()
+    {
+            
+         if( this.shoot)
+            {
+                this.active = true;
+                this.xCord += this.speed;
+
+            }
+
+    }
+    function m_shootMonsBullet()
+    {
+        if(this.xCord < 5/(-this.width + 50))
+            {
+                this.active = true;
+                monsterBulletObj.monsBulletPosition();
+            }
+        if(this.active /*&& monsterObj.showMons*/)
+            {
+                this.xCord -= 5;
+            }
+    }
+    
+    function daveCollisionWithGun()
+    {
+        for(var i = 0 ; i < 700; i ++)
+            {
+                if(gridArray[i].image == 14)
+                    {
+                        if(rightsideCollisionDetection(daveBoy,gridArray[i] ))
+                            {
+                                showGun = false;
+                                daveBulletObj.bulletCollected = true;
+                            }
+                    }
+            }
+    }
+   function animateMonsExplosion()
+    {
+        monsterObj.image = explosion2;
+    }
+    function monsterExplosion()
+    {
+        if(monsterObj.showMons)
+            {
+                if(rightsideCollisionDetection(daveBulletObj,monsterObj ))
+                {
+                monsBulletActive = false;
+                monsterBulletObj.active = false;
+                monsterObj.image = explosion1;
+                setTimeout( animateMonsExplosion, 3000);
+                monsterObj.xPos  =400;
+                 monsterObj.yPos  =100;
+                setTimeout(removeMonster, 1000);
+                
+                }
+            }
+        
+    }
+     var monBulletCounter = 0;
+  
+    function davePowerUpCollision()
+    {
+        for(var i = 0 ; i < gridArray.length; i ++)
+            {
+                if(gridArray[i].image == 3 || gridArray[i].image == 4 || gridArray[i].image == 5 || gridArray[i].image == 15 )  
+                    {
+                        if(rightsideCollisionDetection(daveBoy, gridArray[i]) || 
+                           leftsideCollisionDetection(daveBoy, gridArray[i]) || collisionDetection(daveBoy, gridArray[i]))
+                            {
+                                gridArray[i].showDiamonds = false;
+                                if(gridArray[i].image == 3)
+                                    {
+                                        daveBoy.score += 500
+                                    }
+                                if(gridArray[i].image == 4)
+                                    {
+                                        daveBoy.score += 300
+                                    }
+                                if(gridArray[i].image == 5)
+                                    {
+                                        daveBoy.score += 100
+                                    }
+                                if(gridArray[i].image == 15)
+                                    {
+                                        trophyCollected = true;
+                                    }
+                            }
+                    }
+                if(gridArray[i].image == 6)
+                    {
+                        if(rightsideCollisionDetection(daveBoy, gridArray[i]))
+                        {
+                            reachedDoor = true;
+                        }
+                    }
+            }
+    }
+    
+    function animateDaveExplo()
+    {
+        daveBoy.daveImage = explosion2;
+    }
+    function removeDave()
+    {
+        daveBoy.alive = false;
+    }
+    
+    function daveExplosion()
+    {
+        if(monsBulletActive && daveBoy.alive)
+            {
+                /*if(!(((monsterBulletObj.xCord - monsterBulletObj.speed > daveBoy.xCord && monsterBulletObj.xCord - monsterBulletObj.speed >= daveBoy.xCord + daveBoy.size)
+                && (monsterBulletObj.xCord + monsterBulletObj.size - monsterBulletObj.speed > daveBoy.xCord && monsterBulletObj.xCord + monsterBulletObj.size - monsterBulletObj.speed > daveBoy.xCord + daveBoy.size))
+            
+            ||
+           ((monsterBulletObj.xCord - monsterBulletObj.speed < daveBoy.xCord && monsterBulletObj.xCord - monsterBulletObj.speed < daveBoy.xCord + daveBoy.size)
+                && (monsterBulletObj.xCord + monsterBulletObj.size - monsterBulletObj.speed < daveBoy.xCord && monsterBulletObj.xCord + monsterBulletObj.size - monsterBulletObj.speed < daveBoy.xCord+ daveBoy.size))
+          ))
+           
+            {
+                 if(!(((monsterBulletObj.yCord > daveBoy.yCord && monsterBulletObj.yCord >= daveBoy.yCord + daveBoy.size)
+                        && (monsterBulletObj.yCord + monsterBulletObj.size > daveBoy.yCord && monsterBulletObj.yCord + monsterBulletObj.size > daveBoy.yCord + daveBoy.size)) 
+                                                    ||  
+                      ((monsterBulletObj.yCord < daveBoy.yCord && monsterBulletObj.yCord < daveBoy.yCord + daveBoy.size)
+                        && (monsterBulletObj.yCord + monsterBulletObj.size <= daveBoy.yCord && monsterBulletObj.yCord + monsterBulletObj.size < daveBoy.yCord + daveBoy.size))))
+                     {
+                         
+                         
+                         monsterBulletObj.active = false;
+                         monsBulletActive = false;
+                         daveBoy.daveImage = explosion1;
+                         setTimeout( animateDaveExplo, 1000);
+                         //setTimeout(removeDave, 1000);
+                         daveBoy.lives --;
+                         //if(daveBoy.lives > 0)
+                             {
+                                 setTimeout(resetDave, 1000);
+                             }
+                          
+                          while(daveBoy.lives >= 0 )
+                            {
+                                
+                                 //daveLivesCounter++;
+                                 if( daveBoy.lives ==2)
+                                     {
+                                         gridArray[40].image = 0;
+                                        console.log(daveBoy.lives );
+                                     }
+                                 else if(  daveBoy.lives ==1)
+                                     {
+                                         gridArray[39].image =0;
+
+                                     }
+                                 else if( daveBoy.lives == 0)
+                                     {
+                                         gridArray[38].image = 0;
+                                         
+                                          
+                                     }
+                              }
+                          
+                        }
+                 }*/
+                if(!(((monsterBulletObj.xCord - monsterBulletObj.speed > daveBoy.xCord && monsterBulletObj.xCord - monsterBulletObj.speed >= daveBoy.xCord + daveBoy.size)
+                && (monsterBulletObj.xCord + monsterBulletObj.size - monsterBulletObj.speed > daveBoy.xCord && monsterBulletObj.xCord + monsterBulletObj.size - monsterBulletObj.speed > daveBoy.xCord + daveBoy.size))
+            
+            ||
+           ((monsterBulletObj.xCord - monsterBulletObj.speed < daveBoy.xCord && monsterBulletObj.xCord - monsterBulletObj.speed < daveBoy.xCord + daveBoy.size)
+                && (monsterBulletObj.xCord + monsterBulletObj.size - monsterBulletObj.speed < daveBoy.xCord && monsterBulletObj.xCord + monsterBulletObj.size - monsterBulletObj.speed < daveBoy.xCord+ daveBoy.size))
+          ))
+           
+            {
+                 if(!(((monsterBulletObj.yCord > daveBoy.yCord && monsterBulletObj.yCord >= daveBoy.yCord + daveBoy.size)
+                        && (monsterBulletObj.yCord + monsterBulletObj.size > daveBoy.yCord && monsterBulletObj.yCord + monsterBulletObj.size > daveBoy.yCord + daveBoy.size)) 
+                                                    ||  
+                      ((monsterBulletObj.yCord < daveBoy.yCord && monsterBulletObj.yCord < daveBoy.yCord + daveBoy.size)
+                        && (monsterBulletObj.yCord + monsterBulletObj.size <= daveBoy.yCord && monsterBulletObj.yCord + monsterBulletObj.size < daveBoy.yCord + daveBoy.size))))
+                     {
+                         console.log("dave collided with monsBullet");
+                          daveLivesCounter++;
+                         daveBoy.alive = false;
+                         verticalSpeed =0;
+                         gravity = 0;
+                         monsterBulletObj.active = false;
+                        daveBoy.daveImage = explosion1;
+                         setTimeout( animateDaveExplo, 1000);
+                        //setTimeout(removeDave, 1000);
+                         setTimeout(resetDave, 1000);
+                         //daveBoy.lives --;
+                        console.log(daveLivesCounter);
+                         if(daveLivesCounter == 1 )
+                             {
+                                 gridArray[40].image =0;
+                                 
+                                 //resetDave();
+                             }
+                         else if(daveLivesCounter == 2 )
+                             {
+                                 gridArray[39].image =0;
+                                 //break;
+                                 //resetDave();
+                             }
+                         else if(daveLivesCounter == 3)
+                             {
+                                 gridArray[38].image =0;
+                                 //gameOver();
+                                 //break;
+                                 
+                             }
+                        
+                         
+                                     
+                        }
+                 }
+                
+            }
+                
+        
+    }
+    
+    function c_scoredigits(number,x,y)
+{
+    this.x = x;
+    this.y = y;
+    this.number = number;
+    this.width = 10;
+    
+    this.drawDigits = m_drawDigits;
+}
+    
+function m_drawDigits()
+{
+    ctx.drawImage(this.number,this.x,this.y);
+}
+
+var array_digits = new Array(5);
+    
+function displayScore()
+{
+    for(var i = 0; i < array_digits.length; i++)
+        array_digits[i] = new c_scoredigits(zero, scorex + 90 + (i * 11), scorey);
+}
+    
+displayScore();
+   
+    function gameOver()
+{
+    //if(daveBoy.lives == 0)
+    {
+        clearInterval(gameControl);
+        
+        ctx.globalAlpha = 1;
+        ctx.font = "bold 50px Courier New";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "white";
+        ctx.fillText("GAME OVER!",canvas.width/2,(canvas.height)/2);
+    }
+}
+function levelDone()
+{
+    
+    if((trophyCollected) && (reachedDoor))
+    {
+        for(var i = 0; i < gridArray.length; i++)
+        {
+            
+                if(gridArray[i].image == 6 && rightsideCollisionDetection(daveBoy, gridArray[i]) )
+                    {
+                         clearInterval(gameControl);
+                         ctx.globalAlpha = 1;
+                         ctx.font = "bold 70px Courier New";
+                         ctx.textAlign = "center";
+                         ctx.fillStyle = "blue";
+                         ctx.fillText("LEVEL COMPLETED!",canvas.width/2,(canvas.height)/2);
+                    }
+        }
+    }
+    
+}
+    
+function scoreboard()
+{
+    ctx.drawImage(score,scorex,scorey);
+    var g_score = daveBoy.score.toString();
+    if(g_score.length == 1)
+        g_score = "0000"+g_score;
+    else if(g_score.length == 2)
+        g_score = "000"+g_score;
+    else if(g_score.length == 3)
+        g_score = "00"+g_score;
+    if(g_score.length == 4)
+        g_score = "0"+g_score;
+    for(var i = 0; i < array_digits.length; i++)
+    {
+        if(g_score.charAt(i) == "0")
+            array_digits[i].number = zero;
+        else if(g_score.charAt(i) == "1")
+            array_digits[i].number = one;
+        else if(g_score.charAt(i) == "2")
+            array_digits[i].number = two;
+        else if(g_score.charAt(i) == "3")
+            array_digits[i].number = three;
+        else if(g_score.charAt(i) == "4")
+            array_digits[i].number = four;
+        else if(g_score.charAt(i) == "5")
+            array_digits[i].number = five;
+        else if(g_score.charAt(i) == "6")
+            array_digits[i].number = six;
+        else if(g_score.charAt(i) == "7")
+            array_digits[i].number = seven;
+        else if(g_score.charAt(i) == "8")
+            array_digits[i].number = eight;
+        else if(g_score.charAt(i) == "9")
+            array_digits[i].number = nine;
+    }
+    for(var i = 0; i < array_digits.length; i++)
+        array_digits[i].drawDigits();
+    //ctx.drawImage(davelife,220,scorey);
+    /*if(daveBoy.lives > 1)
+        ctx.drawImage(lives,300,scorey);
+    if(daveBoy.lives > 2)
+        ctx.drawImage(lives,320,scorey);*/
+    if(trophyCollected)
+        ctx.drawImage(gothru,trophyX,trophyY);
+    if(daveBulletObj.bulletCollected)
+    {
+        ctx.drawImage(guntext,30,trophyY);
+        ctx.drawImage(gun,30,trophyY + 20);
+    }
+}
+    
+function printText()
+{
+    ctx.fillStyle = "white"
+    ctx.font = "29px Pickwick";
+    ctx.fillText("The David's Fantasy World", 400, 50);
+    ctx.font = "20px Comic Sans Bold";
+    ctx.fillStyle = "red";
+    ctx.fillText("Use Up-arrow to Jump Up", 450, 280);
+    
+    ctx.fillText("Use right-arrow to Move Right", 450, 300);
+    ctx.font = "20px Comic Sans";
+    ctx.fillText("Use Left-arrow to move Left", 450, 320);
+    ctx.font = "20px Comic Sans";
+    ctx.fillStyle = "green";
+    ctx.font = "25px calibri ";
+    ctx.fillText("Press ENTER to play the game", 500, 370);
+}
+    function menuTimer()    
+{
+    g_menuTimer += 1000/20;
+    if(g_menuTimer >= (1000/20)*3)
+    {
+        g_menucount++;
+        g_menuTimer = 0;
+    }    
+}
+    
+    function daveMenu()
+{
+    var daveMenuHeight = 190;
+    var deaveMenuWidth = 220;
+    //ctx.fillRect(0,0,g_canvas.width,g_canvas.height);
+    if(g_menucount == 0)
+        ctx.drawImage(daveMenu0,450,60,deaveMenuWidth, daveMenuHeight);
+    if(g_menucount == 1)
+        ctx.drawImage(daveMenu1,450,60,deaveMenuWidth, daveMenuHeight);
+    if(g_menucount == 2)
+    {    
+        ctx.drawImage(daveMenu1,450,60,deaveMenuWidth, daveMenuHeight);
+        g_menucount = 0;
+    }
+}
+    
+        
+
+function gameLoop()
+{
+    if(startscene)
+        {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            //ctx.fillStyle = "black";
+            //ctx.fillRect(0,0, canvas.width, canvas.height);
+            ctx.drawImage(bgImage,0,0, canvas.width, canvas.height);
+            ctx.drawImage(arrow,700,250, 70, 70);
+            
+            
+            menuTimer() ;
+            daveMenu();
+            printText();
+            ctx.drawImage(daveBoyImg,300,250, 150, 150);
+    
+        }
+        
+    if(gamescene)
+        {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+            ctx.fillStyle = "black";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+            scoreboard();
+            for(var i = 0 ; i < gridArray.length; i++)
+            {
+                gridArray[i].drawImage();
+            } 
+            daveCollisionWithGun();
+            daveExplosion();
+            if(daveLivesCounter == 3)
+                {
+                    setTimeout(gameOver, 1000);
+                }
+
+            davePowerUpCollision();
+            daveBoy.yCord -= verticalSpeed;
+            daveBoy.moveDave();
+            daveBoy.drawDave();
+
+            monsterObj.moveMonster();
+            monsterObj.drawMonster();
+            fireAndWaterConsume();
+            daveBulletObj.shootDaveBullet();
+            daveBulletObj.drawBullet();
+            monsterExplosion();
+
+            monsterBulletObj.drawBullet();
+            monsterBulletObj.shootMonsBullet();
+           levelDone();
+
+            
+        }
+    
+    
+    
+  
+    
+}
+    
+document.addEventListener("keydown", keyDownManager);
+document.addEventListener("keyup", keyUpManager);
+ createGrid();
+monsterBulletObj.xCord =-100;
+var gameControl = setInterval(gameLoop,33.33);
+  
+</script>
+
+    
